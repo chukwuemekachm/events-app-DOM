@@ -1,4 +1,4 @@
-Function.prototype.render = function () {
+Object.prototype.render = function () {
   return this.wrapper;
 }
 
@@ -263,3 +263,178 @@ function getComponents() {
     Alert,
   };
 }
+
+
+function initApp(components, eventsData) {
+  const mainWrapper = document.getElementById('__ROOT__');
+  const portalWrapper = document.getElementById('__PORTAL__');
+
+  function renderOnPortal(node) {
+    while (portalWrapper.firstChild) {
+      portalWrapper.firstChild.remove();
+    }
+    portalWrapper.appendChild(node);
+    portalWrapper.style.display = 'flex';
+  }
+
+  function closePortal() {
+    portalWrapper.style.display = 'none';
+  }
+
+  if (mainWrapper) {
+    const domFragment = document.createDocumentFragment();
+    eventsData.forEach(event => {
+      domFragment.append(new components.EventCard(event).render());
+    });
+
+    mainWrapper.addEventListener('click', function (event) {
+      if (event.target.tagName === 'BUTTON') {
+        const attributes = event.target.attributes;
+
+        if (attributes['data-event-id']) {
+          const event = eventsData.find(data => data.eventId === attributes['data-event-id'].value);
+          const modalContent = new components.ModalContent({
+            modalTitle: 'Event Preview',
+            children: new components.EventPreview(event).render(),
+          });
+          renderOnPortal(modalContent.render());
+        }
+      }
+    })
+
+    mainWrapper.appendChild(domFragment);
+  }
+
+  if (portalWrapper) {
+    portalWrapper.addEventListener('click', function (event) {
+      if (event.target.tagName === 'BUTTON') {
+        const attributes = event.target.attributes;
+
+        if (attributes['data-event-id'] && attributes['data-event-type']) {
+          let modalContent = null;
+
+          if (attributes['data-event-type'].value === 'regular') {
+            modalContent = new components.ModalContent({
+              modalTitle: 'Application Success',
+              children: new components.Alert({
+                type: 'success',
+                message: 'You\'ve successfully applied for this event.',
+              }).render(),
+            });
+          } else {
+            modalContent = new components.ModalContent({
+              modalTitle: 'Application Failed',
+              children: new components.Alert({
+                type: 'error',
+                message: 'Sorry this webinar is for premium members only.',
+              }).render(),
+            });
+          }
+
+          renderOnPortal(modalContent.render());
+        }
+
+        if (
+          !attributes['data-event-id'] &&
+          attributes['data-event-type'] &&
+          attributes['data-event-type'].value === 'regular'
+        ) {
+          closePortal();
+        }
+      }
+
+      if (event.target.tagName === 'ION-ICON') {
+        const attributes = event.target.attributes;
+
+        if (attributes.name && attributes.name.value === 'close-circle-outline') {
+          closePortal();
+        }
+      }
+    })
+  }
+}
+
+const mocksData = [
+  {
+    eventId: '02',
+    title: 'Two Park Seminar',
+    type: 'premium-only webinar',
+    time: 'April 15th 2020',
+    venue: 'WhiteField Parklane, Ilupeju Lagos.',
+    isPremium: true,
+    imageURL: 'https://images.pexels.com/photos/2608517/pexels-photo-2608517.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500',
+    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
+  },
+  {
+    eventId: '03',
+    title: 'Women in Tech',
+    type: 'hackaton',
+    time: 'April 21st 2020',
+    venue: 'WhiteField Parklane, Ilupeju Lagos.',
+    isPremium: false,
+    imageURL: 'https://images.pexels.com/photos/942419/pexels-photo-942419.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
+    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
+  },
+  {
+    eventId: '04',
+    title: 'Career fair',
+    type: 'mission',
+    time: 'April 30th 20120',
+    venue: 'WhiteField Parklane, Ilupeju Lagos.',
+    isPremium: false,
+    imageURL: 'https://images.unsplash.com/photo-1531058020387-3be344556be6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80',
+    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
+  },
+  {
+    eventId: '01',
+    title: 'Web Development Webinar',
+    type: 'premium-only webinar',
+    time: 'April 10th 2020',
+    venue: 'WhiteField Parklane, Ilupeju Lagos.',
+    isPremium: true,
+    imageURL: 'https://images.pexels.com/photos/1708936/pexels-photo-1708936.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
+    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
+  },
+  {
+    eventId: '05',
+    title: 'GraphQL Webinar',
+    type: 'open webinar',
+    time: 'May 10th 2020',
+    venue: 'WhiteField Parklane, Ilupeju Lagos.',
+    isPremium: false,
+    imageURL: 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80',
+    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
+  },
+  {
+    eventId: '06',
+    title: 'Open VR',
+    type: 'meet up',
+    time: 'May 20th 2020',
+    venue: 'WhiteField Parklane, Ilupeju Lagos.',
+    isPremium: false,
+    imageURL: 'https://images.pexels.com/photos/2774556/pexels-photo-2774556.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
+    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
+  },
+  {
+    eventId: '07',
+    title: 'GraphQL happy hour',
+    type: 'leap',
+    time: 'May 25th 2020',
+    venue: 'WhiteField Parklane, Ilupeju Lagos.',
+    isPremium: false,
+    imageURL: 'https://images.pexels.com/photos/3321793/pexels-photo-3321793.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
+    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
+  },
+  {
+    eventId: '08',
+    title: 'Open AR',
+    type: 'meet up',
+    time: 'June 5th 2020',
+    venue: 'WhiteField Parklane, Ilupeju Lagos.',
+    isPremium: false,
+    imageURL: 'https://images.pexels.com/photos/1481276/pexels-photo-1481276.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
+    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
+  }
+];
+
+initApp(getComponents(), mocksData);
