@@ -1,0 +1,47 @@
+:root {
+  --white: #ffffff;
+  --gains-boro: #d4d9e2;
+  --dim-gray: #595959;
+  --light-salmon: #fa9078;
+  --tomato: #f7542f;
+  --alice-blue: #f0f5fb;
+  --snow: #f9f9f9;
+  --dodger-blue: #1ea1f2;
+  --steel-blue: #4267b2;
+  --dark-cyan: #0077b5;
+  --light-sea-green: #00bb8f;
+  --medium-sea-green: #42c88a;
+  --slate-blue: #6b66c2;
+  --crimson: #f22e46;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 600;
+
+  --base-font-size: 16px;
+
+  --spacing-x-x-small: 0.25rem;
+  --spacing-x-small: 0.5rem;
+  --spacing-small: 1rem;
+  --spacing-medium: 1.5rem;
+  --spacing-large: 1.5rem;
+
+  font-size: --base-font-size;
+  font-family: -apple-system, BlinkMacSystemFont, segoe ui, roboto, oxygen, cantarell, helvetica neue, ubuntu, sans-serif;
+
+  --font-size-small: 0.8rem;
+  --font-size-normal: 1rem;
+  --font-size-medium: 1.5rem;
+  --font-size-large: 2rem;
+  --font-size-x-large: 5rem;
+}
+
+body {
+  background-color: var(--alice-blue);
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
